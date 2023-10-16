@@ -11,13 +11,13 @@ public class WechatConfig {
      * 你的微信的APPID
      * appId
      */
-    public static final String VxAppId = "wxa999159f7da22f14";
+    public static final String VxAppId = "wxa3831f38e7b40eae";
 
     /**
      * 你的微信的密钥
      * appSecret
      */
-    public static final String VxAppSecret = "afceb166aba23a1c88fbdb85db4f3496";
+    public static final String VxAppSecret = "db04fca9df5c7ee8928db376cbe8e3ab";
 
     public static final List<User> userList = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class WechatConfig {
 
         userList.add(getUser(
                 "ozXiU6jFPVVhJDOJ2UfoUE0POOMs",
-                "UEwba3pfhHwGpVLFR15YtekZOt01krIctg5h4mY1gfA",
+                "ozXiU6jFPVVhJDOJ2UfoUE0POOMs",
                 "dawei",
                 "江苏省南京市玄武区",
                 "南京",
