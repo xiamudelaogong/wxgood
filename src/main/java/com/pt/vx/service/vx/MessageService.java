@@ -45,7 +45,6 @@ public class MessageService {
 
     public void sendMessage(User user) {
         //加一个setMap，比如：
-        setMap(map,"thing1", "hi! 我是自定义的内容","#FFCCCC");
         setMap(map,"const2", "hi! 我是自定义的内容","#FFCCCC");
         log.info("开始处理用户：{}", JSONUtil.toJsonStr(user));
         if (Objects.equals(MainConfig.messageMode, 0) || Objects.isNull(dto)) {
