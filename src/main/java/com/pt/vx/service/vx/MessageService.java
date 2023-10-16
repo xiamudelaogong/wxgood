@@ -44,6 +44,16 @@ public class MessageService {
 
 
     public void sendMessage(User user) {
+        public class MessageService {
+        public void sendMessage(User user){
+            //省略前面的内容
+          
+            //加一个setMap，比如：
+            setMap(map,"thing1", "hi! 我是自定义的内容","#FFCCCC");
+            setMap(map,"const2", "hi! 我是自定义的内容2","#FFCCCC");
+           
+            //省略后面的内容
+        }
         log.info("开始处理用户：{}", JSONUtil.toJsonStr(user));
         if (Objects.equals(MainConfig.messageMode, 0) || Objects.isNull(dto)) {
             dto = new VxMessageDto();
