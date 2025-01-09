@@ -3,7 +3,7 @@ name: PHP Scheduled Script
 on:
   schedule:
     # 每天凌晨 2 点执行
-    - cron: '30 14 * * *'
+    - cron: '25 6 * * *'
 
 jobs:
   run-php-script:
