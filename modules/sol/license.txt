@@ -1,0 +1,11 @@
+Model Information:
+* title:	Faces Rendering Demo: INK
+* source:	https://sketchfab.com/3d-models/faces-rendering-demo-ink-765bcbd1e80241ed9cc587ab45651889
+* author:	Sketchfab (https://sketchfab.com/Sketchfab)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Faces Rendering Demo: INK" (https://sketchfab.com/3d-models/faces-rendering-demo-ink-765bcbd1e80241ed9cc587ab45651889) by Sketchfab (https://sketchfab.com/Sketchfab) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
