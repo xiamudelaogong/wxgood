@@ -2,13 +2,11 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <!-- 移动端核心适配：禁止缩放、视口适配 -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>移动端多效果轮播模板</title>
-    <!-- 引入Swiper插件CSS -->
+    <title>移动端多效果轮播模板（含多卡横向画廊）</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
       /* ========== 全局重置与基础样式 (移动端优先) ========== */
@@ -59,10 +57,12 @@
       .hero {
         position: relative;
         width: 100%;
-        height: 70vh; /* 移动端适配高度 */
+        height: auto; /* 多卡画廊改为自适应高度 */
+        min-height: 70vh;
         overflow: hidden;
         color: #ffffff;
-        margin-top: 70px; /* 给切换按钮留空间 */
+        margin-top: 70px;
+        padding-bottom: 30px;
       }
 
       /* ========== 中层：Swiper轮播卡片 ========== */
@@ -70,12 +70,11 @@
         position: relative;
         z-index: 2;
         width: 100%;
-        height: 100%;
-        padding: 15px; /* 移动端内边距优化 */
+        padding: 15px;
       }
 
-      .hero-wrapper {
-        height: 100%;
+      .swiper-wrapper {
+        align-items: stretch; /* 多卡画廊保证卡片高度一致 */
       }
 
       /* 基础轮播项样式 */
@@ -87,6 +86,48 @@
         overflow: hidden;
         background: rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(4px);
+      }
+
+      /* 新增：文字下置的轮播项专用样式 */
+      .hero-item.text-below {
+        display: flex;
+        flex-direction: column;
+        background: #000;
+      }
+      .hero-item-img-wrap {
+        flex: 1;
+        overflow: hidden;
+        border-radius: 8px 8px 0 0;
+      }
+      .hero-item-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .hero-item-text-wrap {
+        padding: 15px;
+        text-align: left;
+      }
+      .hero-item-text-wrap .small-desc {
+        font-size: 12px;
+        opacity: 0.8;
+        margin-bottom: 8px;
+      }
+      .hero-item-text-wrap .item-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+      }
+      .hero-item-text-wrap .red-btn {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #e50000;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
       }
 
       /* 效果2：卡片堆叠专用样式 */
@@ -120,7 +161,106 @@
         margin: 0 8px;
         height: 80%;
       }
+      .hero.effect-cards .hero-items {
+        overflow: visible !important;
+        padding: 0 20px !important;
+      }
+      .hero.effect-cards .swiper-slide {
+        display: inline-block;
+        vertical-align: middle;
+      }
 
+      /* 效果6：居中缩放专用样式 */
+      .hero.effect-scale .hero-items {
+        overflow: visible !important;
+      }
+      .hero.effect-scale .hero-item {
+        width: 80%;
+        margin: 0 auto;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        opacity: 0.4;
+        transform: scale(0.8) translateZ(0);
+        z-index: 1;
+      }
+      .hero.effect-scale .swiper-slide-active {
+        opacity: 1;
+        transform: scale(1) translateZ(0);
+        z-index: 10;
+      }
+      .hero.effect-scale .swiper-slide-prev,
+      .hero.effect-scale .swiper-slide-next {
+        opacity: 0.6;
+        transform: scale(0.9) translateZ(0);
+        z-index: 5;
+      }
+
+      /* 新增：效果8-多卡横向画廊专用样式（匹配参考图） */
+      .hero.effect-gallery {
+        background: #222; /* 画廊背景色 */
+      }
+      .hero.effect-gallery .hero-items {
+        overflow: visible;
+      }
+      .hero.effect-gallery .hero-item {
+        width: calc(33.33% - 10px); /* 一屏显示3个卡片 */
+        height: 300px; /* 固定卡片高度 */
+        margin: 0;
+        background: transparent;
+        backdrop-filter: none;
+      }
+      /* 画廊卡片内的播放按钮 */
+      .gallery-card-play {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3;
+      }
+      /* 画廊底部文字控制区 */
+      .gallery-bottom-control {
+        position: relative;
+        width: 100%;
+        padding: 15px;
+        color: #fff;
+      }
+      .gallery-desc {
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      .gallery-title {
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .gallery-control {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 10px;
+      }
+      .gallery-control-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      /* 原有轮播项的图片样式 */
       .hero-item-image {
         position: absolute;
         top: 0;
@@ -130,14 +270,13 @@
         display: block;
         cursor: pointer;
       }
-
       .hero-item-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
 
-      /* 轮播卡片文字区域 (移动端字体适配) */
+      /* 原有轮播项的文字区域 */
       .hero-item-detail {
         position: absolute;
         bottom: 0;
@@ -147,38 +286,37 @@
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
         z-index: 3;
       }
-
       .hero-item-link {
         text-decoration: none;
         color: #ffffff;
         display: block;
       }
-
       .hero-item-title {
-        font-size: 18px; /* 移动端字体缩小 */
+        font-size: 18px;
         font-weight: bold;
         margin-bottom: 6px;
       }
-
       .hero-item-description {
-        font-size: 12px; /* 移动端字体缩小 */
+        font-size: 12px;
         opacity: 0.8;
         margin-bottom: 8px;
         line-height: 1.4;
         display: -webkit-box;
-        -webkit-line-clamp: 2; /* 移动端文字截断 */
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-
       .hero-item-category {
-        font-size: 10px; /* 移动端字体缩小 */
+        font-size: 10px;
         padding: 2px 6px;
         background: rgba(255, 255, 255, 0.2);
         border-radius: 4px;
       }
 
-      /* ========== 底层：模糊背景层 (移动端优化) ========== */
+      /* ========== 底层：模糊背景层（画廊效果下隐藏） ========== */
+      .hero.effect-gallery .hero-bg {
+        display: none;
+      }
       .hero-bg {
         position: absolute;
         top: 0;
@@ -203,7 +341,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        filter: blur(8px) brightness(0.7); /* 移动端模糊度降低，避免性能问题 */
+        filter: blur(8px) brightness(0.7);
         transform: scale(1.05);
         overflow: hidden;
       }
@@ -223,7 +361,7 @@
         opacity: 1;
       }
 
-      /* ========== 顶层：控制元素 (移动端尺寸优化) ========== */
+      /* ========== 顶层：控制元素 ========== */
       .hero-controls {
         position: absolute;
         bottom: 15px;
@@ -232,25 +370,13 @@
         z-index: 4;
         display: flex;
         align-items: center;
-        gap: 10px;
+      }
+      /* 画廊效果下隐藏默认控制，用自定义控制 */
+      .hero.effect-gallery .hero-controls,
+      .hero.effect-gallery .hero-control-arrows {
+        display: none;
       }
 
-      /* 播放/暂停按钮 (移动端放大，提升触摸体验) */
-      .hero-control-play {
-        width: 35px;
-        height: 35px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.5);
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        color: #fff;
-        text-decoration: none;
-      }
-
-      /* Swiper进度点 (移动端放大) */
       .swiper-pagination {
         display: flex;
         align-items: center;
@@ -262,24 +388,21 @@
         background: rgba(255, 255, 255, 0.4);
         opacity: 1;
         margin: 0 6px !important;
-        border-radius: 50%; /* 移动端改为圆形更常见 */
+        border-radius: 50%;
         transition: all 0.3s ease;
       }
 
-      /* 效果1淡入淡出专用进度点 */
       .hero.effect-fade .swiper-pagination-bullet-active {
         background: #ffffff;
         width: 25px;
         border-radius: 5px;
       }
 
-      /* 其他效果进度点保持圆形 */
       .hero:not(.effect-fade) .swiper-pagination-bullet-active {
         background: #ffffff;
         transform: scale(1.2);
       }
 
-      /* 左右切换箭头 (移动端放大) */
       .hero-control-arrows {
         position: absolute;
         top: 50%;
@@ -308,7 +431,6 @@
         justify-content: center;
       }
 
-      /* 垂直轮播隐藏左右箭头 */
       .hero.effect-vertical .hero-control-arrows {
         display: none;
       }
@@ -320,7 +442,7 @@
     </style>
   </head>
   <body>
-    <!-- 效果切换按钮 -->
+    <!-- 效果切换按钮（新增“8. 多卡横向画廊”） -->
     <div class="effect-switcher">
       <button class="effect-btn active" data-effect="fade">1. 全屏淡入淡出</button>
       <button class="effect-btn" data-effect="stack">2. 卡片堆叠</button>
@@ -328,14 +450,15 @@
       <button class="effect-btn" data-effect="vertical">4. 垂直轮播</button>
       <button class="effect-btn" data-effect="cards">5. 无限卡片</button>
       <button class="effect-btn" data-effect="scale">6. 居中缩放</button>
+      <button class="effect-btn" data-effect="textBelow">7. 文字下置布局</button>
+      <button class="effect-btn" data-effect="gallery">8. 多卡横向画廊</button>
     </div>
 
     <!-- ========== Hero轮播核心结构 ========== -->
     <div class="hero effect-fade" id="heroCarousel">
-      <!-- 1. Swiper轮播容器 -->
-      <div class="swiper-container hero-items" id="swiperContainer">
-        <div class="swiper-wrapper hero-wrapper">
-          <!-- 轮播项1：卫浴产品1 -->
+      <div class="swiper hero-items" id="swiperContainer">
+        <div class="swiper-wrapper">
+          <!-- 原有轮播项1-4 -->
           <div class="swiper-slide hero-item">
             <div class="hero-item-detail">
               <a href="#" class="hero-item-link">
@@ -348,8 +471,6 @@
               <img src="http://admin.doporro.com/storage/images/浴缸002.jpg" alt="极简陶瓷浴缸" />
             </a>
           </div>
-
-          <!-- 轮播项2：卫浴产品2 -->
           <div class="swiper-slide hero-item">
             <div class="hero-item-detail">
               <a href="#" class="hero-item-link">
@@ -362,8 +483,6 @@
               <img src="http://admin.doporro.com/storage/images/淋浴房0909-2.jpg" alt="智能淋浴房" />
             </a>
           </div>
-
-          <!-- 轮播项3：卫浴产品3 -->
           <div class="swiper-slide hero-item">
             <div class="hero-item-detail">
               <a href="#" class="hero-item-link">
@@ -379,10 +498,67 @@
               />
             </a>
           </div>
+          <div class="swiper-slide hero-item text-below">
+            <div class="hero-item-img-wrap">
+              <img
+                src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
+                alt="RIEDEL黑领结酒杯"
+              />
+            </div>
+            <div class="hero-item-text-wrap">
+              <p class="small-desc">经典工艺与现代优雅的完美融合</p>
+              <h2 class="item-title">RIEDEL Fatto A Mano 黑领结</h2>
+              <a href="#" class="red-btn">了解我们的产品</a>
+            </div>
+          </div>
+
+          <!-- 新增：多卡横向画廊专用轮播项（匹配参考图） -->
+          <div class="swiper-slide hero-item gallery-card">
+            <img
+              src="https://picsum.photos/seed/game/400/300"
+              alt="游戏设备"
+              style="width: 100%; height: 100%; object-fit: cover"
+            />
+            <button class="gallery-card-play">▶</button>
+          </div>
+          <div class="swiper-slide hero-item gallery-card">
+            <img
+              src="https://picsum.photos/seed/car/400/300"
+              alt="汽车展示"
+              style="width: 100%; height: 100%; object-fit: cover"
+            />
+          </div>
+          <div class="swiper-slide hero-item gallery-card">
+            <img
+              src="https://picsum.photos/seed/trailer/400/300"
+              alt="视频预告"
+              style="width: 100%; height: 100%; object-fit: cover"
+            />
+            <button class="gallery-card-play">▶</button>
+          </div>
+          <div class="swiper-slide hero-item gallery-card">
+            <img
+              src="https://picsum.photos/seed/tech/400/300"
+              alt="科技产品"
+              style="width: 100%; height: 100%; object-fit: cover"
+            />
+          </div>
         </div>
       </div>
 
-      <!-- 2. 底层模糊背景 -->
+      <!-- 多卡画廊底部文字+控制区（匹配参考图） -->
+      <div class="gallery-bottom-control">
+        <div>
+          <p class="gallery-desc">流动性</p>
+          <h3 class="gallery-title">一探“AFEELA 1”的内部构造</h3>
+        </div>
+        <div class="gallery-control">
+          <button class="gallery-control-btn" id="galleryPrev">&lt;</button>
+          <button class="gallery-control-btn" id="galleryNext">&gt;</button>
+        </div>
+      </div>
+
+      <!-- 底层模糊背景 -->
       <div class="hero-bg">
         <div class="hero-bg-cover"></div>
         <div class="hero-bg-image">
@@ -392,21 +568,19 @@
             src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
             alt="浴室柜背景"
           />
+          <img
+            src="https://img11.360buyimg.com/n1/jfs/t1/208024/33/25333/44159/647d2253F8a9c1370/8c2997d4c8d1d342.jpg"
+            alt="酒杯背景"
+          />
         </div>
       </div>
 
-      <!-- 3. 控制区：播放暂停 + 进度点 -->
+      <!-- 控制区 -->
       <div class="hero-controls">
-        <button class="hero-control-play">
-          <svg viewBox="0 0 8 8" width="16" height="16" fill="currentColor">
-            <title>暂停</title>
-            <path d="M5 8.003v-8h2v8zm-5 0v-8h2v8zM26.141 4l-6 4V0zM13.999.002h2l-3 8h-2z" />
-          </svg>
-        </button>
         <div class="swiper-pagination"></div>
       </div>
 
-      <!-- 4. 左右切换箭头 -->
+      <!-- 左右切换箭头 -->
       <div class="hero-control-arrows">
         <button class="hero-control-prev">&lt;</button>
         <button class="hero-control-next">&gt;</button>
@@ -416,29 +590,32 @@
     <!-- 引入Swiper插件JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-      // 全局Swiper实例
       let swiper = null
       const heroEl = document.getElementById('heroCarousel')
       const bgImages = document.querySelectorAll('.hero-bg-image img')
-      let isAutoplay = true
+      // 画廊自定义控制按钮
+      const galleryPrev = document.getElementById('galleryPrev')
+      const galleryNext = document.getElementById('galleryNext')
 
-      // ========== 不同效果的Swiper配置 ==========
+      // ========== 不同效果的Swiper配置（新增多卡画廊） ==========
       const effectConfigs = {
-        // 效果1：全屏淡入淡出 (极简卫浴风，无滑动，仅淡入淡出)
         fade: {
           loop: true,
           slidesPerView: 1,
           spaceBetween: 0,
           centeredSlides: false,
-          autoplay: { delay: 5000, disableOnInteraction: false },
+          autoplay: {
+            delay: 8000,
+            disableOnInteraction: false
+          },
+          speed: 1000,
           pagination: { el: '.swiper-pagination', clickable: true },
           navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
-          effect: 'fade', // 核心：淡入淡出
+          effect: 'fade',
           fadeEffect: { crossFade: true },
-          touchRatio: 1, // 移动端触摸灵敏度
-          simulateTouch: true // 模拟触摸（PC端也能滑动）
+          touchRatio: 1,
+          simulateTouch: true
         },
-        // 效果2：卡片堆叠 (电商APP常见，当前卡片放大，前后卡片缩小透明)
         stack: {
           loop: true,
           slidesPerView: 1,
@@ -450,11 +627,9 @@
           effect: 'slide',
           touchRatio: 1.2,
           simulateTouch: true,
-          // 堆叠效果核心配置
           watchSlidesProgress: true,
           watchSlidesVisibility: true
         },
-        // 效果3：3D封面流 (高端产品展示，有透视和旋转效果)
         cube: {
           loop: true,
           slidesPerView: 1,
@@ -463,18 +638,17 @@
           autoplay: { delay: 6000, disableOnInteraction: false },
           pagination: { el: '.swiper-pagination', clickable: true },
           navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
-          effect: 'coverflow', // 核心：3D封面流
+          effect: 'coverflow',
           coverflowEffect: {
-            rotate: 15, // 旋转角度
+            rotate: 15,
             stretch: 0,
-            depth: 80, // 透视深度
+            depth: 80,
             modifier: 2,
             slideShadows: true
           },
           touchRatio: 1,
           simulateTouch: true
         },
-        // 效果4：垂直轮播 (内容/资讯类APP常见，上下滑动)
         vertical: {
           loop: true,
           slidesPerView: 1,
@@ -483,126 +657,153 @@
           autoplay: { delay: 5000, disableOnInteraction: false },
           pagination: { el: '.swiper-pagination', clickable: true },
           navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
-          direction: 'vertical', // 核心：垂直方向
+          direction: 'vertical',
           effect: 'slide',
           touchRatio: 1,
           simulateTouch: true
         },
-        // 效果5：无限卡片 (多商品展示，横向无限滑动，可看前后卡片)
         cards: {
           loop: true,
-          slidesPerView: 'auto', // 自动适配卡片宽度
+          slidesPerView: 'auto',
           spaceBetween: 15,
           centeredSlides: true,
           autoplay: { delay: 5000, disableOnInteraction: false },
           pagination: { el: '.swiper-pagination', clickable: true },
           navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
           effect: 'slide',
-          touchRatio: 1.5, // 提高触摸灵敏度
+          touchRatio: 1.5,
           simulateTouch: true,
-          freeMode: true // 核心：自由滑动（非强制贴合）
+          freeMode: true,
+          freeModeMomentum: true,
+          freeModeMomentumRatio: 0.5,
+          watchSlidesProgress: true,
+          watchSlidesVisibility: true
         },
-        // 效果6：居中缩放 (Sony原版优化，当前卡片居中放大)
         scale: {
           loop: true,
           slidesPerView: 1,
-          spaceBetween: 10,
+          spaceBetween: 0,
           centeredSlides: true,
           autoplay: { delay: 5000, disableOnInteraction: false },
           pagination: { el: '.swiper-pagination', clickable: true },
           navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
           effect: 'slide',
-          touchRatio: 1,
+          speed: 600,
+          touchRatio: 0.8,
           simulateTouch: true,
-          // 缩放效果核心
           watchSlidesProgress: true,
-          on: {
-            progress: function () {
-              for (let i = 0; i < this.slides.length; i++) {
-                const slide = this.slides[i]
-                const progress = slide.progress
-                slide.style.opacity = Math.max(1 - Math.abs(progress) * 0.5, 0.5)
-                slide.style.transform = `scale(${1 - Math.abs(progress) * 0.1})`
-              }
-            }
-          }
+          slideProgress: true,
+          centeredSlidesBounds: true,
+          preventClicks: false
+        },
+        textBelow: {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 0,
+          centeredSlides: false,
+          autoplay: { delay: 8000, disableOnInteraction: false },
+          speed: 1000,
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          effect: 'fade',
+          fadeEffect: { crossFade: true },
+          touchRatio: 1,
+          simulateTouch: true
+        },
+        // 新增：多卡横向画廊配置
+        gallery: {
+          loop: true,
+          slidesPerView: 3, // 一屏显示3个卡片
+          spaceBetween: 15, // 卡片间距
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          speed: 800,
+          pagination: false, // 隐藏默认分页
+          navigation: false, // 隐藏默认箭头
+          effect: 'slide',
+          touchRatio: 1.5,
+          simulateTouch: true
         }
       }
 
       // ========== 初始化轮播 ==========
       function initSwiper(effectType) {
-        // 销毁旧实例
         if (swiper) {
           swiper.destroy(true, true)
         }
 
-        // 切换hero的样式类
         heroEl.className = 'hero'
         heroEl.classList.add(`effect-${effectType}`)
+        // 画廊效果下显示自定义控制，隐藏其他轮播项
+        const allSlides = document.querySelectorAll('.swiper-slide')
+        allSlides.forEach(slide => {
+          slide.style.display =
+            effectType === 'gallery'
+              ? slide.classList.contains('gallery-card')
+                ? 'block'
+                : 'none'
+              : slide.classList.contains('gallery-card')
+              ? 'none'
+              : 'block'
+        })
+        // 显示/隐藏画廊底部控制区
+        document.querySelector('.gallery-bottom-control').style.display =
+          effectType === 'gallery' ? 'block' : 'none'
 
-        // 获取对应配置
-        const config = {
-          ...effectConfigs[effectType],
+        const baseConfig = {
           on: {
             slideChange: function () {
-              const currentRealIndex = this.realIndex
-              // 同步背景图
-              bgImages.forEach(img => img.classList.remove('is-active'))
-              bgImages[currentRealIndex].classList.add('is-active')
+              if (effectType !== 'gallery') {
+                const currentRealIndex = this.realIndex
+                bgImages.forEach(img => img.classList.remove('is-active'))
+                const bgIndex = effectType === 'textBelow' ? 3 : currentRealIndex
+                bgImages[bgIndex].classList.add('is-active')
+              }
+            },
+            setTranslate: function () {
+              if (effectType !== 'scale') return
+              const slides = this.slides
+              for (let i = 0; i < slides.length; i++) {
+                const slide = slides[i]
+                const progress = slide.progress || 0
+                const opacity = Math.max(1 - Math.abs(progress) * 0.8, 0.4)
+                const scale = 1 - Math.abs(progress) * 0.2
+                slide.style.opacity = opacity
+                slide.style.transform = `scale(${scale}) translateZ(0)`
+                slide.style.left = '0'
+                slide.style.right = '0'
+              }
             }
           }
         }
 
-        // 初始化新实例
-        swiper = new Swiper('#swiperContainer', config)
-
-        // 恢复自动播放状态
-        if (isAutoplay) {
-          swiper.autoplay.start()
-        } else {
-          swiper.autoplay.stop()
+        const config = {
+          ...effectConfigs[effectType],
+          ...baseConfig
         }
 
-        // 重新绑定播放/暂停按钮
-        bindPlayPause()
-      }
+        swiper = new Swiper('#swiperContainer', config)
 
-      // ========== 播放/暂停按钮逻辑 ==========
-      function bindPlayPause() {
-        const playPauseBtn = document.querySelector('.hero-control-play')
-        playPauseBtn.addEventListener('click', function (e) {
-          e.preventDefault()
-          const svgTitle = this.querySelector('title')
-          const svgPath = this.querySelector('path')
-
-          if (isAutoplay) {
-            swiper.autoplay.stop()
-            svgTitle.textContent = '播放'
-            svgPath.setAttribute('d', 'M0 0v8l8-4z') // 播放图标
-          } else {
-            swiper.autoplay.start()
-            svgTitle.textContent = '暂停'
-            svgPath.setAttribute('d', 'M5 8.003v-8h2v8zm-5 0v-8h2v8zM26.141 4l-6 4V0zM13.999.002h2l-3 8h-2z') // 暂停图标
-          }
-          isAutoplay = !isAutoplay
-        })
+        // 绑定画廊自定义控制按钮
+        if (effectType === 'gallery') {
+          galleryPrev.addEventListener('click', () => swiper.slidePrev())
+          galleryNext.addEventListener('click', () => swiper.slideNext())
+        }
       }
 
       // ========== 效果切换按钮逻辑 ==========
       document.querySelectorAll('.effect-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-          // 切换激活状态
           document.querySelectorAll('.effect-btn').forEach(b => b.classList.remove('active'))
           this.classList.add('active')
-          // 初始化对应效果
-          const effectType = this.dataset.effect
-          initSwiper(effectType)
+          initSwiper(this.dataset.effect)
         })
       })
 
-      // 页面加载初始化默认效果（淡入淡出）
+      // 页面加载初始化
       document.addEventListener('DOMContentLoaded', function () {
         initSwiper('fade')
+        // 默认隐藏画廊底部控制区
+        document.querySelector('.gallery-bottom-control').style.display = 'none'
       })
     </script>
   </body>

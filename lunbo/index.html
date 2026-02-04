@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>移动端多效果轮播模板（最终修复版）</title>
+    <title>移动端多效果轮播模板（仅7选项显示文字下置项）</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
       /* ========== 全局重置与基础样式 (移动端优先) ========== */
@@ -63,6 +63,16 @@
         margin-top: 70px;
       }
 
+      /* ========== 关键修改：仅在「文字下置布局」选项中显示.text-below轮播项 ========== */
+      /* 非文字下置效果时，隐藏.text-below轮播项 */
+      .hero:not(.effect-textBelow) .hero-item.text-below {
+        display: none;
+      }
+      /* 文字下置效果时，隐藏其他轮播项 */
+      .hero.effect-textBelow .hero-item:not(.text-below) {
+        display: none;
+      }
+
       /* ========== 中层：Swiper轮播卡片 ========== */
       .hero-items {
         position: relative;
@@ -85,6 +95,51 @@
         overflow: hidden;
         background: rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(4px);
+      }
+
+      /* 新增：文字下置的轮播项专用样式（匹配参考图） */
+      .hero-item.text-below {
+        display: flex;
+        flex-direction: column;
+        background: #000; /* 文字区域背景 */
+      }
+      /* 图片区域 */
+      .hero-item-img-wrap {
+        flex: 1; /* 图片占大部分高度 */
+        overflow: hidden;
+        border-radius: 8px 8px 0 0;
+      }
+      .hero-item-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      /* 文字区域（图片下方） */
+      .hero-item-text-wrap {
+        padding: 15px;
+        text-align: left;
+      }
+      .hero-item-text-wrap .small-desc {
+        font-size: 12px;
+        opacity: 0.8;
+        margin-bottom: 8px;
+      }
+      .hero-item-text-wrap .item-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+      }
+      /* 参考图红色按钮 */
+      .hero-item-text-wrap .red-btn {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #e50000;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
       }
 
       /* 效果2：卡片堆叠专用样式 */
@@ -151,6 +206,7 @@
         z-index: 5;
       }
 
+      /* 原有轮播项的图片样式（兼容旧项） */
       .hero-item-image {
         position: absolute;
         top: 0;
@@ -160,14 +216,13 @@
         display: block;
         cursor: pointer;
       }
-
       .hero-item-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
 
-      /* 轮播卡片文字区域 */
+      /* 原有轮播项的文字区域（兼容旧项） */
       .hero-item-detail {
         position: absolute;
         bottom: 0;
@@ -177,19 +232,16 @@
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
         z-index: 3;
       }
-
       .hero-item-link {
         text-decoration: none;
         color: #ffffff;
         display: block;
       }
-
       .hero-item-title {
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 6px;
       }
-
       .hero-item-description {
         font-size: 12px;
         opacity: 0.8;
@@ -200,7 +252,6 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-
       .hero-item-category {
         font-size: 10px;
         padding: 2px 6px;
@@ -329,7 +380,7 @@
     </style>
   </head>
   <body>
-    <!-- 效果切换按钮 -->
+    <!-- 效果切换按钮（新增“7. 文字下置布局”选项） -->
     <div class="effect-switcher">
       <button class="effect-btn active" data-effect="fade">1. 全屏淡入淡出</button>
       <button class="effect-btn" data-effect="stack">2. 卡片堆叠</button>
@@ -337,6 +388,7 @@
       <button class="effect-btn" data-effect="vertical">4. 垂直轮播</button>
       <button class="effect-btn" data-effect="cards">5. 无限卡片</button>
       <button class="effect-btn" data-effect="scale">6. 居中缩放</button>
+      <button class="effect-btn" data-effect="textBelow">7. 文字下置布局</button>
     </div>
 
     <!-- ========== Hero轮播核心结构 ========== -->
@@ -385,6 +437,22 @@
               />
             </a>
           </div>
+          <!-- 轮播项4（仅“7. 文字下置布局”显示） -->
+          <div class="swiper-slide hero-item text-below">
+            <!-- 图片区域（上方） -->
+            <div class="hero-item-img-wrap">
+              <img
+                src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
+                alt="RIEDEL黑领结酒杯"
+              />
+            </div>
+            <!-- 文字区域（图片下方） -->
+            <div class="hero-item-text-wrap">
+              <p class="small-desc">经典工艺与现代优雅的完美融合</p>
+              <h2 class="item-title">RIEDEL Fatto A Mano 黑领结</h2>
+              <a href="#" class="red-btn">了解我们的产品</a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -397,6 +465,11 @@
           <img
             src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
             alt="浴室柜背景"
+          />
+          <!-- 文字下置布局对应的模糊背景图 -->
+          <img
+            src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
+            alt="文字下置背景"
           />
         </div>
       </div>
@@ -420,7 +493,7 @@
       const heroEl = document.getElementById('heroCarousel')
       const bgImages = document.querySelectorAll('.hero-bg-image img')
 
-      // ========== 不同效果的Swiper配置 ==========
+      // ========== 不同效果的Swiper配置（新增“文字下置布局”配置） ==========
       const effectConfigs = {
         fade: {
           loop: true,
@@ -502,24 +575,40 @@
           watchSlidesProgress: true,
           watchSlidesVisibility: true
         },
-        // 效果6：居中缩放（核心修改配置）
         scale: {
           loop: true,
-          slidesPerView: 1, // 仅显示1个主卡片
-          spaceBetween: 0, // 取消间距，减少位移感
-          centeredSlides: true, // 强制卡片居中
+          slidesPerView: 1,
+          spaceBetween: 0,
+          centeredSlides: true,
           autoplay: { delay: 5000, disableOnInteraction: false },
           pagination: { el: '.swiper-pagination', clickable: true },
           navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
-          effect: 'slide', // 保留slide但弱化位移
-          speed: 600, // 放慢滑动速度，贴合缩放过渡
-          touchRatio: 0.8, // 降低触摸灵敏度，减少滑动距离
+          effect: 'slide',
+          speed: 600,
+          touchRatio: 0.8,
           simulateTouch: true,
           watchSlidesProgress: true,
           slideProgress: true,
-          // 关键：弱化滑动的位移感
           centeredSlidesBounds: true,
           preventClicks: false
+        },
+        // 新增：文字下置布局的独立配置
+        textBelow: {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 0,
+          centeredSlides: false,
+          autoplay: {
+            delay: 8000,
+            disableOnInteraction: false
+          },
+          speed: 1000,
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          effect: 'fade',
+          fadeEffect: { crossFade: true },
+          touchRatio: 1,
+          simulateTouch: true
         }
       }
 
@@ -537,21 +626,20 @@
             slideChange: function () {
               const currentRealIndex = this.realIndex
               bgImages.forEach(img => img.classList.remove('is-active'))
-              bgImages[currentRealIndex].classList.add('is-active')
+              // 文字下置布局强制对应第4张背景图
+              const bgIndex = effectType === 'textBelow' ? 3 : currentRealIndex
+              bgImages[bgIndex].classList.add('is-active')
             },
-            // 新增：滑动过程中实时更新缩放（替代原progress回调，更稳定）
             setTranslate: function () {
               if (effectType !== 'scale') return
               const slides = this.slides
               for (let i = 0; i < slides.length; i++) {
                 const slide = slides[i]
                 const progress = slide.progress || 0
-                // 仅保留缩放/透明度，取消位移相关计算
                 const opacity = Math.max(1 - Math.abs(progress) * 0.8, 0.4)
                 const scale = 1 - Math.abs(progress) * 0.2
                 slide.style.opacity = opacity
                 slide.style.transform = `scale(${scale}) translateZ(0)`
-                // 强制重置位移，只保留缩放
                 slide.style.left = '0'
                 slide.style.right = '0'
               }
