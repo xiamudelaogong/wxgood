@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sony风格Hero轮播</title>
+    <!-- 引入Swiper插件CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+      /* ========== 全局重置与基础样式 ========== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #000;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+      }
+
+      /* ========== Hero轮播容器核心样式 ========== */
+      .hero.is-init {
+        position: relative;
+        width: 100%;
+        height: 80vh; /* 占视口80%高度，可自定义 */
+        overflow: hidden;
+        color: #ffffff;
+      }
+
+      /* ========== 中层：Swiper轮播卡片 ========== */
+      .hero-items {
+        position: relative;
+        z-index: 2; /* 轮播卡片在背景上层 */
+        width: 100%;
+        height: 100%;
+        padding: 40px;
+      }
+
+      .hero-wrapper {
+        height: 100%;
+      }
+
+      .hero-item {
+        position: relative;
+        width: 600px; /* 单张轮播卡片宽度 */
+        height: calc(100% - 40px);
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(4px);
+      }
+
+      .hero-item-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: pointer;
+      }
+
+      .hero-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* 图片填充容器且保持比例 */
+      }
+
+      /* 轮播卡片文字区域 */
+      .hero-item-detail {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        z-index: 3;
+      }
+
+      .hero-item-link {
+        text-decoration: none;
+        color: #ffffff;
+        display: block;
+      }
+
+      .hero-item-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      .hero-item-description {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-bottom: 10px;
+        line-height: 1.4;
+      }
+
+      .hero-item-category {
+        font-size: 12px;
+        padding: 2px 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+
+      /* ========== 底层：模糊背景层 ========== */
+      .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      .hero-bg-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* 背景遮罩暗化 */
+      }
+
+      .hero-bg-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        filter: blur(12px) brightness(0.7); /* 模糊+降亮度 */
+        transform: scale(1.05); /* 避免模糊边缘露出空白 */
+        overflow: hidden;
+      }
+
+      .hero-bg-image img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.6s ease; /* 背景切换过渡 */
+      }
+
+      .hero-bg-image img.is-active {
+        opacity: 1; /* 显示当前轮播对应的背景图 */
+      }
+
+      /* ========== 顶层：控制元素 ========== */
+      /* 播放/暂停 + 进度点容器 */
+      .hero-controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      /* 自动轮播播放/暂停按钮 */
+      .hero-control-play {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      /* Swiper进度点样式 */
+      .swiper-pagination {
+        display: flex;
+        align-items: center;
+      }
+
+      .swiper-pagination-bullet {
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.4);
+        opacity: 1;
+        margin: 0 6px !important; /* 覆盖Swiper默认间距 */
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      .swiper-pagination-bullet-active {
+        background: #ffffff;
+        width: 23px; /* 激活态变成长条进度样式 */
+      }
+
+      /* 左右切换箭头 */
+      .hero-control-arrows {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        transform: translateY(-50%);
+        z-index: 4;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+
+      .hero-control-prev,
+      .hero-control-next {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.5);
+        color: #ffffff;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.3s ease;
+      }
+
+      .hero-control-prev:hover,
+      .hero-control-next:hover {
+        background: rgba(0, 0, 0, 0.8);
+      }
+
+      /* 全局居中播放按钮 */
+      .hero-controls-play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 4;
+        cursor: pointer;
+        width: 45px;
+        height: 45px;
+      }
+
+      .hero-controls-play-button svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* 轮播卡片内的播放按钮 */
+      .hero-item-image .hero-controls-play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+      }
+
+      .hero-item-image:hover .hero-controls-play-button {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ========== Hero轮播核心结构 ========== -->
+    <div class="hero is-init">
+      <!-- 1. Swiper轮播容器（中层清晰卡片） -->
+      <div class="swiper-container hero-items">
+        <div class="swiper-wrapper hero-wrapper">
+          <!-- 轮播项1：耳机产品 -->
+          <div class="swiper-slide hero-item">
+            <div class="hero-item-detail">
+              <a href="#" class="hero-item-link">
+                <h2 class="hero-item-title">探索一种全新的聆听方式</h2>
+                <p class="hero-item-description">全新“LinkBuds Clip”让您享受全天舒适佩戴和无缝音质。</p>
+              </a>
+              <span class="hero-item-category">声音的</span>
+            </div>
+            <a
+              href="https://www.youtube.com/embed/0M2f7RNB7cE"
+              class="hero-item-image"
+              data-movie="https://www.youtube.com/embed/0M2f7RNB7cE"
+            >
+              <picture>
+                <source media="(min-width: 641px)" srcset="https://picsum.photos/1200/800?random=1" />
+                <img src="http://admin.doporro.com/storage/images/浴缸002.jpg" alt="LinkBuds Clip" />
+              </picture>
+            </a>
+          </div>
+
+          <!-- 轮播项2：PS5配件 -->
+          <div class="swiper-slide hero-item">
+            <div class="hero-item-detail">
+              <a href="#" class="hero-item-link">
+                <h2 class="hero-item-title">DualSense 无线控制器迎来全新体验</h2>
+                <p class="hero-item-description">
+                  Hyperpop 系列即将揭晓，包含三款全新设计的 PS5 配件，将于今年三月发售。
+                </p>
+              </a>
+              <span class="hero-item-category">游戏</span>
+            </div>
+            <a
+              href="https://www.youtube.com/embed/o2eYfvciS_E"
+              class="hero-item-image"
+              data-movie="https://www.youtube.com/embed/o2eYfvciS_E"
+            >
+              <picture>
+                <source media="(min-width: 641px)" srcset="https://picsum.photos/1200/800?random=2" />
+                <img src="http://admin.doporro.com/storage/images/淋浴房0909-2.jpg" alt="PS5配件" />
+              </picture>
+            </a>
+          </div>
+
+          <!-- 轮播项3：AFEELA 1汽车 -->
+          <div class="swiper-slide hero-item">
+            <div class="hero-item-detail">
+              <a href="#" class="hero-item-link">
+                <h2 class="hero-item-title">一探“AFEELA 1”的内部构造</h2>
+                <p class="hero-item-description">
+                  从智能互联到直观的个人助手，“AFEELA 1”提升您驾驶的每一刻体验
+                </p>
+              </a>
+              <span class="hero-item-category">流动性</span>
+            </div>
+            <a href="https://www.shm-afeela.com/en/product/afeela1/" class="hero-item-image">
+              <picture>
+                <source media="(min-width: 641px)" srcset="https://picsum.photos/1200/800?random=3" />
+                <img
+                  src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
+                  alt="AFEELA 1"
+                />
+              </picture>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 底层模糊背景 -->
+      <div class="hero-bg">
+        <div class="hero-bg-cover"></div>
+        <div class="hero-bg-image">
+          <!-- 背景图与轮播项一一对应 -->
+          <img class="is-active" src="http://admin.doporro.com/storage/images/浴缸002.jpg" alt="耳机背景" />
+          <img src="http://admin.doporro.com/storage/images/淋浴房0909-2.jpg" alt="PS5背景" />
+          <img
+            src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
+            alt="AFEELA 1背景"
+          />
+        </div>
+      </div>
+
+      <!-- 3. 控制区：播放暂停 + 进度点 -->
+
+      <!-- 4. 左右切换箭头 -->
+      <div class="hero-control-arrows">
+        <button class="hero-control-prev">&lt;</button>
+        <button class="hero-control-next">&gt;</button>
+      </div>
+    </div>
+
+    <!-- 引入Swiper插件JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+      // ========== 页面加载完成后初始化 ==========
+      document.addEventListener('DOMContentLoaded', function () {
+        // 1. 初始化Swiper轮播
+        const swiper = new Swiper('.hero-items', {
+          loop: true, // 无限轮播
+          slidesPerView: 1,
+          spaceBetween: 17, // 轮播项间距
+          centeredSlides: true, // 居中显示当前项
+          autoplay: {
+            delay: 5000, // 5秒自动切换
+            disableOnInteraction: false // 交互后不停止自动轮播
+          },
+          pagination: {
+            el: '.swiper-pagination', // 绑定进度点容器
+            clickable: true, // 进度点可点击
+            bulletClass: 'swiper-pagination-bullet',
+            bulletActiveClass: 'swiper-pagination-bullet-active'
+          },
+          navigation: {
+            nextEl: '.hero-control-next', // 绑定右箭头
+            prevEl: '.hero-control-prev' // 绑定左箭头
+          },
+          on: {
+            // 轮播切换时同步背景图
+            slideChange: function () {
+              const currentRealIndex = this.realIndex // 获取真实索引（loop模式）
+              const bgImages = document.querySelectorAll('.hero-bg-image img')
+
+              // 移除所有背景图的active类
+              bgImages.forEach(img => img.classList.remove('is-active'))
+              // 给当前索引的背景图添加active
+              bgImages[currentRealIndex].classList.add('is-active')
+            }
+          }
+        })
+
+        // 2. 自动轮播播放/暂停按钮逻辑
+        const playPauseBtn = document.querySelector('.hero-control-play')
+        let isAutoplay = true // 初始自动播放状态
+
+        playPauseBtn.addEventListener('click', function (e) {
+          e.preventDefault()
+          const svgTitle = this.querySelector('title')
+          const svgPath = this.querySelector('path')
+
+          if (isAutoplay) {
+            // 暂停自动轮播
+            swiper.autoplay.stop()
+            svgTitle.textContent = '播放'
+            // 切换为播放图标路径
+            svgPath.setAttribute('d', 'M0 0v8l8-4z')
+          } else {
+            // 开启自动轮播
+            swiper.autoplay.start()
+            svgTitle.textContent = '暂停'
+            // 切换为暂停图标路径
+            svgPath.setAttribute('d', 'M5 8.003v-8h2v8zm-5 0v-8h2v8zM26.141 4l-6 4V0zM13.999.002h2l-3 8h-2z')
+          }
+          isAutoplay = !isAutoplay
+        })
+
+        // 3. 播放按钮点击逻辑（模拟打开视频）
+        const videoPlayBtns = document.querySelectorAll('.hero-controls-play-button')
+        videoPlayBtns.forEach(btn => {
+          btn.addEventListener('click', function (e) {
+            e.preventDefault()
+            // 获取视频链接（优先取卡片内的视频链接）
+            const movieUrl = this.closest('.hero-item-image')?.dataset.movie
+            if (movieUrl) {
+              // 实际项目中可替换为弹出模态框/打开新窗口
+              alert(`即将播放视频：${movieUrl}`)
+            } else {
+              alert('该内容无视频，将跳转到详情页')
+            }
+          })
+        })
+      })
+    </script>
+  </body>
+</html>

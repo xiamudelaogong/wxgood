@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- 移动端核心适配：禁止缩放、视口适配 -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>移动端多效果轮播模板</title>
+    <!-- 引入Swiper插件CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+      /* ========== 全局重置与基础样式 (移动端优先) ========== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: #000;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        padding: 10px;
+      }
+
+      /* 效果切换按钮容器 */
+      .effect-switcher {
+        position: fixed;
+        top: 10px;
+        left: 0;
+        width: 100%;
+        z-index: 99;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+      }
+
+      .effect-btn {
+        padding: 6px 12px;
+        border: 1px solid #fff;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .effect-btn.active {
+        background: #fff;
+        color: #000;
+      }
+
+      /* ========== Hero轮播容器核心样式 (移动端适配) ========== */
+      .hero {
+        position: relative;
+        width: 100%;
+        height: 70vh; /* 移动端适配高度 */
+        overflow: hidden;
+        color: #ffffff;
+        margin-top: 70px; /* 给切换按钮留空间 */
+      }
+
+      /* ========== 中层：Swiper轮播卡片 ========== */
+      .hero-items {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        padding: 15px; /* 移动端内边距优化 */
+      }
+
+      .hero-wrapper {
+        height: 100%;
+      }
+
+      /* 基础轮播项样式 */
+      .hero-item {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(4px);
+      }
+
+      /* 效果2：卡片堆叠专用样式 */
+      .hero.effect-stack .hero-item {
+        width: 85%;
+        margin: 0 auto;
+        opacity: 0.6;
+        transform: scale(0.9);
+        transition: all 0.3s ease;
+      }
+      .hero.effect-stack .swiper-slide-active {
+        opacity: 1;
+        transform: scale(1);
+        z-index: 10;
+      }
+      .hero.effect-stack .swiper-slide-next {
+        opacity: 0.8;
+        transform: scale(0.95);
+      }
+
+      /* 效果3：3D封面流专用样式 */
+      .hero.effect-cube .hero-item {
+        width: 80%;
+        margin: 0 auto;
+        transform-origin: center;
+      }
+
+      /* 效果5：无限卡片专用样式 */
+      .hero.effect-cards .hero-item {
+        width: 75%;
+        margin: 0 8px;
+        height: 80%;
+      }
+
+      .hero-item-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: pointer;
+      }
+
+      .hero-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* 轮播卡片文字区域 (移动端字体适配) */
+      .hero-item-detail {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        z-index: 3;
+      }
+
+      .hero-item-link {
+        text-decoration: none;
+        color: #ffffff;
+        display: block;
+      }
+
+      .hero-item-title {
+        font-size: 18px; /* 移动端字体缩小 */
+        font-weight: bold;
+        margin-bottom: 6px;
+      }
+
+      .hero-item-description {
+        font-size: 12px; /* 移动端字体缩小 */
+        opacity: 0.8;
+        margin-bottom: 8px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* 移动端文字截断 */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .hero-item-category {
+        font-size: 10px; /* 移动端字体缩小 */
+        padding: 2px 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+
+      /* ========== 底层：模糊背景层 (移动端优化) ========== */
+      .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      .hero-bg-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .hero-bg-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        filter: blur(8px) brightness(0.7); /* 移动端模糊度降低，避免性能问题 */
+        transform: scale(1.05);
+        overflow: hidden;
+      }
+
+      .hero-bg-image img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+      }
+
+      .hero-bg-image img.is-active {
+        opacity: 1;
+      }
+
+      /* ========== 顶层：控制元素 (移动端尺寸优化) ========== */
+      .hero-controls {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 4;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Swiper进度点 (移动端放大) */
+      .swiper-pagination {
+        display: flex;
+        align-items: center;
+      }
+
+      .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.4);
+        opacity: 1;
+        margin: 0 6px !important;
+        border-radius: 50%; /* 移动端改为圆形更常见 */
+        transition: all 0.3s ease;
+      }
+
+      /* 效果1淡入淡出专用进度点 */
+      .hero.effect-fade .swiper-pagination-bullet-active {
+        background: #ffffff;
+        width: 25px;
+        border-radius: 5px;
+      }
+
+      /* 其他效果进度点保持圆形 */
+      .hero:not(.effect-fade) .swiper-pagination-bullet-active {
+        background: #ffffff;
+        transform: scale(1.2);
+      }
+
+      /* 左右切换箭头 (移动端放大) */
+      .hero-control-arrows {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        transform: translateY(-50%);
+        z-index: 4;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 15px;
+      }
+
+      .hero-control-prev,
+      .hero-control-next {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.5);
+        color: #ffffff;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        transition: background 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* 垂直轮播隐藏左右箭头 */
+      .hero.effect-vertical .hero-control-arrows {
+        display: none;
+      }
+
+      .hero-control-prev:hover,
+      .hero-control-next:hover {
+        background: rgba(0, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 效果切换按钮 -->
+    <div class="effect-switcher">
+      <button class="effect-btn active" data-effect="fade">1. 全屏淡入淡出</button>
+      <button class="effect-btn" data-effect="stack">2. 卡片堆叠</button>
+      <button class="effect-btn" data-effect="cube">3. 3D封面流</button>
+      <button class="effect-btn" data-effect="vertical">4. 垂直轮播</button>
+      <button class="effect-btn" data-effect="cards">5. 无限卡片</button>
+      <button class="effect-btn" data-effect="scale">6. 居中缩放</button>
+    </div>
+
+    <!-- ========== Hero轮播核心结构 ========== -->
+    <div class="hero effect-fade" id="heroCarousel">
+      <!-- 1. Swiper轮播容器 -->
+      <div class="swiper-container hero-items" id="swiperContainer">
+        <div class="swiper-wrapper hero-wrapper">
+          <!-- 轮播项1：卫浴产品1 -->
+          <div class="swiper-slide hero-item">
+            <div class="hero-item-detail">
+              <a href="#" class="hero-item-link">
+                <h2 class="hero-item-title">极简陶瓷浴缸</h2>
+                <p class="hero-item-description">采用超薄陶瓷工艺，无缝设计，适配现代极简浴室空间。</p>
+              </a>
+              <span class="hero-item-category">卫浴</span>
+            </div>
+            <a href="#" class="hero-item-image">
+              <img src="http://admin.doporro.com/storage/images/浴缸002.jpg" alt="极简陶瓷浴缸" />
+            </a>
+          </div>
+
+          <!-- 轮播项2：卫浴产品2 -->
+          <div class="swiper-slide hero-item">
+            <div class="hero-item-detail">
+              <a href="#" class="hero-item-link">
+                <h2 class="hero-item-title">智能淋浴房</h2>
+                <p class="hero-item-description">恒温控制+节水技术，360°环绕出水，打造沉浸式沐浴体验。</p>
+              </a>
+              <span class="hero-item-category">智能卫浴</span>
+            </div>
+            <a href="#" class="hero-item-image">
+              <img src="http://admin.doporro.com/storage/images/淋浴房0909-2.jpg" alt="智能淋浴房" />
+            </a>
+          </div>
+
+          <!-- 轮播项3：卫浴产品3 -->
+          <div class="swiper-slide hero-item">
+            <div class="hero-item-detail">
+              <a href="#" class="hero-item-link">
+                <h2 class="hero-item-title">一体式浴室柜</h2>
+                <p class="hero-item-description">实木材质+防水工艺，超大收纳空间，适配小户型浴室。</p>
+              </a>
+              <span class="hero-item-category">浴室家具</span>
+            </div>
+            <a href="#" class="hero-item-image">
+              <img
+                src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
+                alt="一体式浴室柜"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 底层模糊背景 -->
+      <div class="hero-bg">
+        <div class="hero-bg-cover"></div>
+        <div class="hero-bg-image">
+          <img class="is-active" src="http://admin.doporro.com/storage/images/浴缸002.jpg" alt="浴缸背景" />
+          <img src="http://admin.doporro.com/storage/images/淋浴房0909-2.jpg" alt="淋浴房背景" />
+          <img
+            src="http://admin.doporro.com/storage/images/9cd9a9a87abc840a35254ef34382ecfe.jpg"
+            alt="浴室柜背景"
+          />
+        </div>
+      </div>
+
+      <!-- 3. 控制区：仅保留进度点 -->
+      <div class="hero-controls">
+        <div class="swiper-pagination"></div>
+      </div>
+
+      <!-- 4. 左右切换箭头 -->
+      <div class="hero-control-arrows">
+        <button class="hero-control-prev">&lt;</button>
+        <button class="hero-control-next">&gt;</button>
+      </div>
+    </div>
+
+    <!-- 引入Swiper插件JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+      // 全局Swiper实例
+      let swiper = null
+      const heroEl = document.getElementById('heroCarousel')
+      const bgImages = document.querySelectorAll('.hero-bg-image img')
+
+      // ========== 不同效果的Swiper配置 ==========
+      const effectConfigs = {
+        // 效果1：全屏淡入淡出 (极简卫浴风，无滑动，仅淡入淡出)
+        fade: {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 0,
+          centeredSlides: false,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          effect: 'fade', // 核心：淡入淡出
+          fadeEffect: { crossFade: true },
+          touchRatio: 1, // 移动端触摸灵敏度
+          simulateTouch: true // 模拟触摸（PC端也能滑动）
+        },
+        // 效果2：卡片堆叠 (电商APP常见，当前卡片放大，前后卡片缩小透明)
+        stack: {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 10,
+          centeredSlides: true,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          effect: 'slide',
+          touchRatio: 1.2,
+          simulateTouch: true,
+          // 堆叠效果核心配置
+          watchSlidesProgress: true,
+          watchSlidesVisibility: true
+        },
+        // 效果3：3D封面流 (高端产品展示，有透视和旋转效果)
+        cube: {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 20,
+          centeredSlides: true,
+          autoplay: { delay: 6000, disableOnInteraction: false },
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          effect: 'coverflow', // 核心：3D封面流
+          coverflowEffect: {
+            rotate: 15, // 旋转角度
+            stretch: 0,
+            depth: 80, // 透视深度
+            modifier: 2,
+            slideShadows: true
+          },
+          touchRatio: 1,
+          simulateTouch: true
+        },
+        // 效果4：垂直轮播 (内容/资讯类APP常见，上下滑动)
+        vertical: {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 0,
+          centeredSlides: false,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          direction: 'vertical', // 核心：垂直方向
+          effect: 'slide',
+          touchRatio: 1,
+          simulateTouch: true
+        },
+        // 效果5：无限卡片 (多商品展示，横向无限滑动，可看前后卡片)
+        cards: {
+          loop: true,
+          slidesPerView: 'auto', // 自动适配卡片宽度
+          spaceBetween: 15,
+          centeredSlides: true,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          effect: 'slide',
+          touchRatio: 1.5, // 提高触摸灵敏度
+          simulateTouch: true,
+          freeMode: true // 核心：自由滑动（非强制贴合）
+        },
+        // 效果6：居中缩放 (Sony原版优化，当前卡片居中放大)
+        scale: {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 10,
+          centeredSlides: true,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          pagination: { el: '.swiper-pagination', clickable: true },
+          navigation: { nextEl: '.hero-control-next', prevEl: '.hero-control-prev' },
+          effect: 'slide',
+          touchRatio: 1,
+          simulateTouch: true,
+          // 缩放效果核心
+          watchSlidesProgress: true,
+          on: {
+            progress: function () {
+              for (let i = 0; i < this.slides.length; i++) {
+                const slide = this.slides[i]
+                const progress = slide.progress
+                slide.style.opacity = Math.max(1 - Math.abs(progress) * 0.5, 0.5)
+                slide.style.transform = `scale(${1 - Math.abs(progress) * 0.1})`
+              }
+            }
+          }
+        }
+      }
+
+      // ========== 初始化轮播 ==========
+      function initSwiper(effectType) {
+        // 销毁旧实例
+        if (swiper) {
+          swiper.destroy(true, true)
+        }
+
+        // 切换hero的样式类
+        heroEl.className = 'hero'
+        heroEl.classList.add(`effect-${effectType}`)
+
+        // 获取对应配置
+        const config = {
+          ...effectConfigs[effectType],
+          on: {
+            slideChange: function () {
+              const currentRealIndex = this.realIndex
+              // 同步背景图
+              bgImages.forEach(img => img.classList.remove('is-active'))
+              bgImages[currentRealIndex].classList.add('is-active')
+            }
+          }
+        }
+
+        // 初始化新实例
+        swiper = new Swiper('#swiperContainer', config)
+      }
+
+      // ========== 效果切换按钮逻辑 ==========
+      document.querySelectorAll('.effect-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          // 切换激活状态
+          document.querySelectorAll('.effect-btn').forEach(b => b.classList.remove('active'))
+          this.classList.add('active')
+          // 初始化对应效果
+          const effectType = this.dataset.effect
+          initSwiper(effectType)
+        })
+      })
+
+      // 页面加载初始化默认效果（淡入淡出）
+      document.addEventListener('DOMContentLoaded', function () {
+        initSwiper('fade')
+      })
+    </script>
+  </body>
+</html>
